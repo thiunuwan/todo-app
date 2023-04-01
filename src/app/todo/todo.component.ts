@@ -2,13 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {TodoService} from "../shared/todo.service";
 
 @Component({
-  selector: 'app-todo',
-  templateUrl: './todo.component.html',
-  styleUrls: ['./todo.component.css']
+  selector: 'app-todo', templateUrl: './todo.component.html', styleUrls: ['./todo.component.css']
 })
-export class TodoComponent implements OnInit{
+export class TodoComponent implements OnInit {
 
-  todos:any[]=[];
+  todos: any[] = [];
 
   constructor(private todoService: TodoService) {
   }
@@ -18,18 +16,23 @@ export class TodoComponent implements OnInit{
       this.todoService.addTodo(titleInput.value);
       titleInput.value = "";
     }
-
   }
 
   ngOnInit(): void {
-    this.todoService.firestoreCollection.valueChanges({idField:'id'})
-      .subscribe(item =>{
+    this.todoService.firestoreCollection.valueChanges({idField: 'id'})
+      .subscribe(item => {
         console.log(item)
-      this.todos=item;
-    })
+        this.todos = item.sort((a: any, b: any) => {
+          return a.isDone - b.isDone;
+        });
+      })
   }
 
-  onStatusChange(id:string,newStatus:boolean) {
-this.todoService.updateTodoStatus(id,newStatus);
+  onStatusChange(id: string, newStatus: boolean) {
+    this.todoService.updateTodoStatus(id, newStatus);
+  }
+
+  onDelete(id: string) {
+    this.todoService.deleteTodo(id);
   }
 }
